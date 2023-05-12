@@ -5,7 +5,7 @@
  *
  * Return: 0
  */
-int main()
+int main(void)
 {
 	pid_t pid;
 	char *args[] = {command, NULL};
@@ -15,17 +15,14 @@ int main()
 		/* Display prompt and wait for user input */
 		printf("#cisfun$ ");
 		fflush(stdout);
-
 		if (fgets(command, MAX_COMMAND_SIZE, stdin) == NULL)
 		{
 			/* Handle end of file (Ctrl+D) */
 			printf("\n");
 			exit(0);
 		}
-
 		/* Remove trailing newline character */
 		command[strcspn(command, "\n")] = '\0';
-
 		/* Fork a child process to execute command */
 		pid = fork();
 		if (pid == 0)
@@ -50,6 +47,5 @@ int main()
 			printf("\n");
 		}
 	}
-
 	return (0);
 }
