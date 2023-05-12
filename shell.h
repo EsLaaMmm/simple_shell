@@ -6,5 +6,5 @@
 
 #define MAX_COMMAND_SIZE 64
 
-char* tokens[MAX_NUM_TOKENS];
-int numTokens = 0;
+/* MAIN FILE */
+char command[MAX_COMMAND_SIZE];
