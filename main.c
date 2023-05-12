@@ -2,7 +2,6 @@
 
 /**
  * main - Unix Command Line Interpreter
- *
  * Return: 0
  */
 int main(void)
