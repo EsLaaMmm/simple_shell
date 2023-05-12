@@ -2,12 +2,15 @@
 
 /**
  * main - Unix Command Line Interpreter
+ * @argc: Argument count
+ * @argv: argumenr vector
  * Return: 0
  */
-int main(void)
+int main(int agrc, char *argv[])
 {
 	pid_t pid;
-	char *args[] = {command, NULL};
+	char *args[MAX_ARGUMENTS] = {NULL};
+	int i;
 
 	while (1)
 	{
@@ -22,14 +25,19 @@ int main(void)
 		}
 		/* Remove trailing newline character */
 		command[strcspn(command, "\n")] = '\0';
+		/* Parse command line arguments */
+		args[0] = command;
+		for (i = 1; i < argc && i < MAX_ARGUMENTS -1; i++)
+			args[i] = argv[i];
+		args[i] = NULL;
 		/* Fork a child process to execute command */
 		pid = fork();
 		if (pid == 0)
 		{
 			/* Child process */
-			if (execve(command, args, environ) == -1)
+			if (execve(args[0], args, environ) == -1)
 			{
-				printf("%s: command not found\n", command);
+				printf("%s: command not found\n", args[0]);
 				exit(1);
 			}
 		}
