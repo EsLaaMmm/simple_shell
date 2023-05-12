@@ -9,6 +9,9 @@
 #include <errno.h>
 
 #define MAX_COMMAND_SIZE 1024
+#define MAX_ARGS 64
+
+extern char environ;
 
 /* MAIN FILE */
 void execute_command(char **args);

@@ -9,10 +9,12 @@ char *_getenv(const char *name);
 int main(void)
 {
 	pid_t pid;
-	char *token, *command = NULL, *path = NULL;
+	char *args[MAX_ARGS], *token, *command = NULL, *path = NULL;
 	size_t bufsize = 0;
 	int status, i = 0;
 	char *command_path = malloc(strlen(token) + strlen(args[0]) + 2);
+
+	path = _getenv("PATH"):
 
 	while (1)
 	{
@@ -103,13 +105,16 @@ char *_getenv(const char *name)
 {
 	int i;
 	size_t len = strlen(name);
-	char *env;
+	char *env, *result = NULL;
 
 	for (i = 0; environ[i] != NULL; i++)
 	{
 		env = (environ[i]);
-		if (strcmp(env, name, len) == 0 && env[len] == '=')
+		if (strcmp(env, name) == 0 && env[len] == '=')
+		{
 			return (&env[len + 1]);
+			break;
+		}
 	}
-	return (NULL);
+	return (result);
 }
