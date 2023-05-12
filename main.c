@@ -2,15 +2,12 @@
 
 /**
  * main - Unix Command Line Interpreter
- * @argc: Argument count
- * @argv: argumenr vector
  * Return: 0
  */
-int main(int argc, char *argv[])
+int main(void)
 {
 	pid_t pid;
-	char *args[MAX_ARGUMENTS] = {NULL};
-	int i;
+	char *args[] = {command, NULL};
 
 	while (1)
 	{
@@ -25,10 +22,6 @@ int main(int argc, char *argv[])
 		}
 		/* Remove trailing newline character */
 		command[strcspn(command, "\n")] = '\0';
-		/* Tokenize command into arguments */
-		args[0] = command;
-		for (i = 1; i < argc; i++)
-			args[i] = argv[i];
 		/* Fork a child process to execute command */
 		pid = fork();
 		if (pid == 0)
