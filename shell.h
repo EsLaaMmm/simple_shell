@@ -3,11 +3,16 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <dirent.h>
+#include <errno.h>
 
-#define MAX_COMMAND_SIZE 64
+#define MAX_COMMAND_SIZE 1024
 
 /* MAIN FILE */
-char command[MAX_COMMAND_SIZE];
-extern char **environ;
-
-#endif
+void execute_command(char **args);
+char **parse_command(char *command);
+int check_builtin(char **args);
+void print_error(char *command, int code);
+void free_args(char **args);

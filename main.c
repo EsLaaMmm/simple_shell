@@ -1,5 +1,7 @@
 #include "shell.h"
 
+char *_getenv(const char *name);
+
 /**
  * main - Unix Command Line Interpreter
  * Return: 0
@@ -7,7 +9,7 @@
 int main(void)
 {
 	pid_t pid;
-	char *args[MAX_ARGS], *token, *command = NULL, *path = NULL;
+	char *token, *command = NULL, *path = NULL;
 	size_t bufsize = 0;
 	int status, i = 0;
 	char *command_path = malloc(strlen(token) + strlen(args[0]) + 2);
@@ -28,7 +30,7 @@ int main(void)
 		command[strcspn(command, "\n")] = '\0';
 		/* Split input into tokens */
 		token = strtok(command, " ");
-		while (token != NULL && i < MAX_ARGS -1)
+		while (token != NULL && i < MAX_ARGS - 1)
 		{
 			args[i++] = token;
 			token = strtok(NULL, " ");
@@ -39,12 +41,12 @@ int main(void)
 		{
 			exit(EXIT_SUCCESS);
 		}
-		else if (strcmp(args[0], "cd") ==0)
+		else if (strcmp(args[0], "cd") == 0)
 		{
 			if (args[1] == NULL)
 			{
 				/* Change to home directory */
-				chdir(getenv("HOME"));
+				chdir(_getenv("HOME"));
 			}
 			else if (chdir(args[1]) == -1)
 			{
@@ -99,20 +101,15 @@ int main(void)
  */
 char *_getenv(const char *name)
 {
-	char *env_var, *token;
 	int i;
+	size_t len = strlen(name);
+	char *env;
 
 	for (i = 0; environ[i] != NULL; i++)
 	{
-		env_var = strdup(environ[i]);
-		token = strtok(env_var, "=");
-		if (strcmp(token, name) == 0)
-		{
-			token = strtok(NULL, "=");
-			free(env_var);
-			return (token);
-		}
-		free(env_var);
+		env = (environ[i]);
+		if (strcmp(env, name, len) == 0 && env[len] == '=')
+			return (&env[len + 1]);
 	}
 	return (NULL);
 }
