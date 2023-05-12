@@ -7,44 +7,112 @@
 int main(void)
 {
 	pid_t pid;
-	char *args[] = {command, NULL};
+	char *args[MAX_ARGS], *token, *command = NULL, *path = NULL;
+	size_t bufsize = 0;
+	int status, i = 0;
+	char *command_path = malloc(strlen(token) + strlen(args[0]) + 2);
 
 	while (1)
 	{
 		/* Display prompt and wait for user input */
 		printf("#cisfun$ ");
 		fflush(stdout);
-		if (fgets(command, MAX_COMMAND_SIZE, stdin) == NULL)
+		/* Read user input */
+		if (getline(&command, &bufsize, stdin) == -1)
 		{
 			/* Handle end of file (Ctrl+D) */
 			printf("\n");
-			exit(0);
+			exit(EXIT_SUCCESS);
 		}
 		/* Remove trailing newline character */
 		command[strcspn(command, "\n")] = '\0';
+		/* Split input into tokens */
+		token = strtok(command, " ");
+		while (token != NULL && i < MAX_ARGS -1)
+		{
+			args[i++] = token;
+			token = strtok(NULL, " ");
+		}
+		args[i] = NULL;
+		/* Checks for built-in command */
+		if (strcmp(args[0], "exit") == 0)
+		{
+			exit(EXIT_SUCCESS);
+		}
+		else if (strcmp(args[0], "cd") ==0)
+		{
+			if (args[1] == NULL)
+			{
+				/* Change to home directory */
+				chdir(getenv("HOME"));
+			}
+			else if (chdir(args[1]) == -1)
+			{
+				perror("cd");
+			}
+			continue;
+		}
+		/* Search for command in PATH */
+		path = _getenv("PATH");
+		token = strtok(path, ":");
+		while (token != NULL)
+		{
+			sprintf(command_path, "%s/%s", token, args[0]);
+			if (access(command_path, X_OK) == 0)
+			{
+				args[0] = command_path;
+				break;
+			}
+			free(command_path);
+			token = strtok(NULL, ":");
+		}
 		/* Fork a child process to execute command */
 		pid = fork();
-		if (pid == 0)
+		if (pid == -1)
+		{
+			perror("fork");
+			exit(EXIT_FAILURE);
+		}
+		else if (pid == 0)
 		{
 			/* Child process */
-			if (execve(command, args, environ) == -1)
+			if (execve(args[0], args, NULL) == -1)
 			{
-				printf("%s: command not found\n", command);
-				exit(1);
+				perror("execve");
+				exit(EXIT_FAILURE);
 			}
-		}
-		else if (pid < 0)
-		{
-			/* Handle fork error */
-			printf("Fork failed\n");
-			exit(1);
 		}
 		else
 		{
 			/* Parent process */
-			waitpid(pid, NULL, 0);
-			printf("\n");
+			waitpid(pid, &status, 0);
 		}
 	}
+	free(command);
 	return (0);
+}
+
+/**
+ * _getenv - Gets the value of an enviroment variable
+ * @name: Name of the variable
+ * Return: Value of the variable or NULL if not found
+ */
+char *_getenv(const char *name)
+{
+	char *env_var, *token;
+	int i;
+
+	for (i = 0; environ[i] != NULL; i++)
+	{
+		env_var = strdup(environ[i]);
+		token = strtok(env_var, "=");
+		if (strcmp(token, name) == 0)
+		{
+			token = strtok(NULL, "=");
+			free(env_var);
+			return (token);
+		}
+		free(env_var);
+	}
+	return (NULL);
 }
