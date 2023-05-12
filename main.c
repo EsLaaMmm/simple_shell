@@ -8,12 +8,14 @@
 int main()
 {
 	pid_t pid;
+	char *args[] = {command, NULL};
 
 	while (1)
 	{
 		/* Display prompt and wait for user input */
-		printf("simple_shell> ");
+		printf("#cisfun$ ");
 		fflush(stdout);
+
 		if (fgets(command, MAX_COMMAND_SIZE, stdin) == NULL)
 		{
 			/* Handle end of file (Ctrl+D) */
@@ -29,14 +31,23 @@ int main()
 		if (pid == 0)
 		{
 			/* Child process */
-			execlp(command, command, NULL);
-			printf("Command not found: %s\n", command);
+			if (execve(command, args, environ) == -1)
+			{
+				printf("%s: command not found\n", command);
+				exit(1);
+			}
+		}
+		else if (pid < 0)
+		{
+			/* Handle fork error */
+			printf("Fork failed\n");
 			exit(1);
 		}
 		else
 		{
 			/* Parent process */
 			waitpid(pid, NULL, 0);
+			printf("\n");
 		}
 	}
 

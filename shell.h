@@ -8,3 +8,4 @@
 
 /* MAIN FILE */
 char command[MAX_COMMAND_SIZE];
+extern char **environ;
