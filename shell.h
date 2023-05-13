@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <sys/type.h>
 
 #define MAX_COMMAND_SIZE 64
 
