@@ -1,74 +1,105 @@
 #include "shell.h"
 
 /**
- * handle_args - execute command with arguments
- * @command: command to execute
- * @args: arguments for command
- * Return: 0 on success, 1 on failure
+ * main - Entry point
+ * @argc: Argument count
+ * @argv: Argument vector
+ * @envp: Environment variables
+ * Return: Exit status of the shell
  */
-int handle_args(char *command, char **args)
+int main(int argc, char **argv, char **envp)
 {
-	pid_t pid;
+        char *line = NULL;
+        char **args = NULL;
+        int status = 0;
 
-	pid = fork();
-	if (pid == 0)
-	{
-		/* Child process */
-		if (execve(command, args, environ) == -1)
-		{
-			printf("%s: command not found\n", command);
-			exit(1);
-		}
-	}
-	else if (pid < 0)
-	{
-		/* Handle fork error */
-		printf("Fork failed\n");
-		exit(1);
-	}
-	else
-	{
-		/* Parent process */
-		waitpid(pid, NULL, 0);
-	}
-	return (0);
+        /* loop until user exits shell */
+        while (1)
+        {
+                /* print shell prompt */
+                printf("cisfun$ ");
+
+                /* read input from user */
+                if (getline(&line, &(size_t){0}, stdin) == -1)
+                        return (EXIT_FAILURE);
+
+                /* tokenize input into arguments */
+                args = tokenize(line);
+
+                /* check if input is empty */
+                if (!args || !*args)
+                {
+                        free(line);
+                        free(args);
+                        continue;
+                }
+
+                /* exit shell if user enters "exit" */
+                if (_strcmp(args[0], "exit") == 0)
+                {
+                        free(line);
+                        free(args);
+                        return (status);
+                }
+
+                /* check if command exists and execute it */
+                status = execute(args, envp);
+
+                /* free memory allocated for line and args */
+                free(line);
+                free(args);
+        }
+
+        return (status);
 }
 /**
- * main - Unix Command Line Interpreter
- * Return: 0
+ * execute - Checks if command exists and executes it
+ * @args: Array of arguments to the command
+ * @envp: Environment variables
+ * Return: Exit status of executed command
  */
-int main(void)
+int execute(char **args, char **envp)
 {
-	char command[MAX_COMMAND_SIZE];
-	char *args[MAX_ARGUMENTS] = {NULL};
-	int i;
+        pid_t pid;
+        int status;
+        char *path;
+        struct stat st;
 
-	while (1)
-	{
-		/* Display prompt and wait for user input */
-		printf("#cisfun$ ");
-		fflush(stdout);
-		if (fgets(command, MAX_COMMAND_SIZE, stdin) == NULL)
-		{
-			/* Handle end of file (Ctrl+D) */
-			printf("\n");
-			exit(0);
-		}
-		/* Remove trailing newline character */
-		command[strcspn(command, "\n")] = '\0';
-		/* Parse command line into arguments */
-		args[0] = strtok(command, " ");
-		for (i = 1; i < MAX_ARGUMENTS && args[i - 1] != NULL; i++)
-			args[i] = strtok(NULL, " ");
-		/* Handle empty command */
-		if (args[0] == NULL)
-			continue;
-		/* Handle built-in commands */
-		if (strcmp(args[0], "exit") == 0)
-			exit(0);
-		/* Execute command with arguments */
-		handle_args(args[0], args);
-	}
-	return (0);
+        /* check if command exists */
+        path = check_path(args[0], envp);
+        if (!path)
+        {
+                printf("%s: command not found\n", args[0]);
+                return (127);
+        }
+        /* create child process */
+        pid = fork();
+        if (pid == -1)
+        {
+                perror("fork");
+                return (EXIT_FAILURE);
+        }
+        if (pid == 0)
+        {
+                /* execute command in child process */
+                if (execve(path, args, envp) == -1)
+                {
+                        perror("execve");
+                        _exit(EXIT_FAILURE);
+                }
+        }
+	/* wait for child process to complete */
+        if (waitpid(pid, &status, 0) == -1)
+        {
+                perror("waitpid");
+                return (EXIT_FAILURE);
+        }
+        /* get exit status of child process */
+        if (WIFEXITED(status))
+                status = WEXITSTATUS(status);
+
+        /* free memory allocated for path */
+        free(path);
+
+        return (status);
 }
-
