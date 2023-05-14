@@ -9,6 +9,7 @@
  */
 int main(int argc, char **argv, char **envp)
 {
+	size_t size = 0;
         char *line = NULL;
         char **args = NULL;
         int status = 0;
@@ -20,7 +21,7 @@ int main(int argc, char **argv, char **envp)
                 printf("cisfun$ ");
 
                 /* read input from user */
-                if (getline(&line, &(size_t){0}, stdin) == -1)
+                if (getline(&line, &size, stdin) == -1)
                         return (EXIT_FAILURE);
 
                 /* tokenize input into arguments */
@@ -35,7 +36,7 @@ int main(int argc, char **argv, char **envp)
                 }
 
                 /* exit shell if user enters "exit" */
-                if (_strcmp(args[0], "exit") == 0)
+                if (strcmp(args[0], "exit") == 0)
                 {
                         free(line);
                         free(args);
