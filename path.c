@@ -17,25 +17,28 @@ char *check_path(char *command, char **envp)
 	paths = get_paths(envp);
 
 	/* check if command exists in each directory */
-	for (i = 0; paths && paths[i]; i++){
-		/* allocate memory for path string /
-		   path = malloc(sizeof(char) * (strlen(paths[i]) + strlen(command) + 2));
-		   if (!path) {
-		   perror("malloc");
-		   exit(EXIT_FAILURE);
-		   }
-		   / construct path string /
-		   sprintf(path, "%s/%s", paths[i], command);
-		   / check if file exists and is executable /
-		   if (stat(path, &st) == 0 && st.st_mode & S_IXUSR) {
-		   / command found /
-		   free(paths);
-		   return path;
-		   }
-		   / free memory /
-		   free(path);
-		   }
-		   / command not found */
-		free(paths);
-	return NULL;
+	for (i = 0; paths && paths[i]; i++)
+	{
+		/* allocate memory for path string */
+		path = malloc(sizeof(char) * (strlen(paths[i]) + strlen(command) + 2));
+		if (!path)
+		{
+			perror("malloc");
+			exit(EXIT_FAILURE);
+		}
+		/* construct path string */
+		sprintf(path, "%s/%s", paths[i], command);
+		/* check if file exists and is executable */
+		if (stat(path, &st) == 0 && st.st_mode & S_IXUSR)
+		{
+			/* command found */
+			free(paths);
+			return (path);
+		}
+		/* free memory */
+		free(path);
+	}
+	/* command not found */
+	free(paths);
+	return (NULL);
 }
