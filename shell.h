@@ -7,12 +7,15 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
+#include <fcntl.h>
 
 #define MAX_COMMAND_SIZE 1024
 #define MAX_ARGUMENTS 128
 
 /* MAIN FILE */
 int execute(char **args, char **envp);
+
+/* TOKENIZE */
 char **tokenize(char *line);
 
 /* PATH */
