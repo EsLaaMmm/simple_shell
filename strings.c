@@ -34,7 +34,7 @@ char *strcpy(char *dest, const char *src)
  * @src: Source string
  * Return: Pointer to destination string
  */
-char *_strcat(char *dest, const char *src)
+char *strcat(char *dest, const char *src)
 {
 	int dest_len = strlen(dest);
 	int i;
