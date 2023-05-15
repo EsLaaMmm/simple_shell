@@ -7,7 +7,7 @@
  * @envp: Environment variables
  * Return: Exit status of the shell
  */
-int main(void)
+int main(int argc, char **argv, char **envp)
 {
 	size_t size = 0;
         char *line = NULL;
@@ -43,7 +43,7 @@ int main(void)
                 }
 
                 /* check if command exists and execute it */
-                status = execute(args, NULL);
+                status = execute(args, envp);
 
                 /* free memory allocated for line and args */
                 free(line);
