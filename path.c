@@ -1,51 +1,27 @@
 #include "shell.h"
 
 /**
- * get_path - Returns an array of directories in the PATH
+ * _getenv - Gets the value of an environment variable
+ * @name: Name of the environment variable
  * @envp: Environment variables
- * Return: Array of directories in the PATH environment variable
+ * Return: Value of the environment variable, or NULL if not found
  */
-char **get_path(char **envp)
+char *_getenv(const char *name, char **envp)
 {
-        char **path = NULL;
-        char *path_env;
-	char *c;
-        char *dir;
-        int i, n;
+	char *env_var, *value;
+	size_t name_len;
 
-        /* find PATH environment variable */
-        for (i = 0; envp[i]; i++)
-        {
-                if (strncmp(envp[i], "PATH=", 5) == 0)
-                {
-                        /* allocate memory for path array */
-                        path_env = envp[i] + 5;
-                        n = 1; /* count number of directories in path */
-                        for (c = path_env; *c != '\0'; c++)
-                        {
-                                if (*c == ':')
-                                        n++;
-                        }
-                        path = malloc(sizeof(char *) * (n + 1));
-                        if (!path)
-                        {
-                                perror("malloc");
-                                exit(EXIT_FAILURE);
-                        }
-
-                        /* tokenize path_env string */
-                        dir = strtok(path_env, ":");
-                        for (i = 0; dir; i++)
-                        {
-                                path[i] = dir;
-                                dir = strtok(NULL, ":");
-                        }
-                        path[i] = NULL;
-                        break;
-                }
-        }
-
-        return (path);
+	name_len = strlen(name);
+	for (; *envp; envp++)
+	{
+		env_var = *envp;
+		if (strncmp(env_var, name, name_len) == 0 && env_var[name_len] == '=')
+		{
+			value = env_var + name_len + 1;
+			return (value);
+		}
+	}
+	return (NULL);
 }
 
 /**
@@ -56,37 +32,31 @@ char **get_path(char **envp)
  */
 char *check_path(char *command, char **envp)
 {
-	char **paths;
-	char *path;
+	char *path =_getenv("PATH",envp);
+	char *dir, *fullpath;
 	struct stat st;
-	int i;
 
-	/* get array of directories in PATH */
-	paths = get_path(envp);
-
-	/* check if command exists in each directory */
-	for (i = 0; paths && paths[i]; i++)
+	/* tokenize PATH variable and check each directory for commands */
+	dir = strtok(path, ":");
+	while (dir)
 	{
-		/* allocate memory for path string */
-		path = malloc(sizeof(char) * (strlen(paths[i]) + strlen(command) + 2));
-		if (!path)
+		fullpath = malloc(strlen(dir) + strlen(command) + 2);
+		if (!fullpath)
+			return (NULL);
+		strcpy(fullpath, dir);
+		strcat(fullpath, "/");
+		strcat(fullpath, command);
+		if (stat(fullpath, &st) == 0)
 		{
-			perror("malloc");
-			exit(EXIT_FAILURE);
+			/* command exists */
+			free(path);
+			return (fullpath);
 		}
-		/* construct path string */
-		sprintf(path, "%s/%s", paths[i], command);
-		/* check if file exists and is executable */
-		if (stat(path, &st) == 0 && st.st_mode & S_IXUSR)
-		{
-			/* command found */
-			free(paths);
-			return (path);
-		}
-		/* free memory */
-		free(path);
+		free(fullpath);
+		dir = strtok(NULL, ":");
 	}
+
 	/* command not found */
-	free(paths);
+	free(path);
 	return (NULL);
 }
