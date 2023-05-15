@@ -31,11 +31,10 @@ int main(void)
                 if (!args || !*args)
                 {
                         free(line);
-                        free(args);
                         continue;
                 }
 
-                /* exit shell if user enters "exit" */
+                /* exit shell if user enters exit */
                 if (strcmp(args[0], "exit") == 0)
                 {
                         free(line);
@@ -86,7 +85,7 @@ int execute(char **args, char **envp)
                 if (execve(path, args, envp) == -1)
                 {
                         perror("execve");
-                        _exit(EXIT_FAILURE);
+                        exit(EXIT_FAILURE);
                 }
         }
 	/* wait for child process to complete */
