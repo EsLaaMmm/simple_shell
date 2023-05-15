@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <fcntl.h>
 
 #define MAX_COMMAND_SIZE 1024
@@ -19,7 +20,7 @@ int execute(char **args, char **envp);
 char **tokenize(char *line);
 
 /* PATH */
-char **get_paths(char **envp);
+char **get_path(char **envp);
 char *check_path(char *command, char **envp);
 
 #endif
