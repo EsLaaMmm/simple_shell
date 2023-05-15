@@ -1,10 +1,9 @@
 #include "shell.h"
 
 /**
- * tokenize - breaks a string into tokens
- * @str: string to tokenize
- *
- * Return: array of tokens
+ * tokenize - Breaks a string into tokens
+ * @str: String to tokenize
+ * Return: Array of tokens
  */
 char **tokenize(char *str)
 {
