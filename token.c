@@ -9,16 +9,16 @@ char **tokenize(char *str)
 {
         char **tokens;
         char *token;
-        int i, n = 0;
+        int i, n;
 
         /* count number of tokens */
         for (i = 0; str[i]; i++)
         {
-                if (str[i] == ' ')
+                if (str[i] == ' ' || str[i] == '\t' || str[i] == '\r' || str[i] == '\n' || str[i] == '\f' || str[i] == '\v')
                         continue;
                 n++;
-                while (str[i] && str[i] != ' ')
-                        i++;
+                while (str[i] && str[i] != ' ' && str[i] != '\t' && str[i] != '\r' && str[i] != '\n' && str[i] != '\f' && str[i] != '\v')
+			i++;
         }
 
         /* allocate memory for token array */
@@ -30,13 +30,14 @@ char **tokenize(char *str)
         }
 
         /* tokenize string */
-        token = strtok(str, " \n\t");
-        for (i = 0; token; i++)
+	n = 0;
+        token = strtok(str, " \t\r\n\f\v");
+        while (token)
         {
-                tokens[i] = token;
-                token = strtok(NULL, " \n\t");
+                tokens[n++] = token;
+                token = strtok(NULL, " \t\r\n\f\v");
         }
-        tokens[i] = NULL;
+        tokens[n] = NULL;
 
         return (tokens);
 }
