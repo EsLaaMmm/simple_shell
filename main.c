@@ -7,7 +7,7 @@
  * @envp: Environment variables
  * Return: Exit status of the shell
  */
-int main(int argc, char **argv, char **envp)
+int main(void)
 {
 	size_t size = 0;
         char *line = NULL;
@@ -43,7 +43,7 @@ int main(int argc, char **argv, char **envp)
                 }
 
                 /* check if command exists and execute it */
-                status = execute(args, envp);
+                status = execute(args, NULL);
 
                 /* free memory allocated for line and args */
                 free(line);
@@ -63,7 +63,6 @@ int execute(char **args, char **envp)
         pid_t pid;
         int status;
         char *path;
-        /* struct stat st; */
 
         /* check if command exists */
         path = check_path(args[0], envp);
@@ -88,16 +87,18 @@ int execute(char **args, char **envp)
                         exit(EXIT_FAILURE);
                 }
         }
-	/* wait for child process to complete */
-        if (waitpid(pid, &status, 0) == -1)
-        {
-                perror("waitpid");
-                return (EXIT_FAILURE);
-        }
-        /* get exit status of child process */
-        if (WIFEXITED(status))
-                status = WEXITSTATUS(status);
-
+	else
+	{
+		/* parent process */
+		if (waitpid(pid, &status, 0) == -1)
+		{
+			perror("waitpid");
+			return (EXIT_FAILURE);
+		}
+		/* get exit status of child process */
+		if (WIFEXITED(status))
+			status = WEXITSTATUS(status);
+	}
         /* free memory allocated for path */
         free(path);
 
