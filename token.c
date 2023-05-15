@@ -7,37 +7,28 @@
  */
 char **tokenize(char *str)
 {
-        char **tokens;
+        char **tokens = NULL;
         char *token;
-        int i, n;
+        int i = 0;
 
-        /* count number of tokens */
-        for (i = 0; str[i]; i++)
-        {
-                if (str[i] == ' ' || str[i] == '\t' || str[i] == '\r' || str[i] == '\n' || str[i] == '\f' || str[i] == '\v')
-                        continue;
-                n++;
-                while (str[i] && str[i] != ' ' && str[i] != '\t' && str[i] != '\r' && str[i] != '\n' && str[i] != '\f' && str[i] != '\v')
-			i++;
-        }
-
-        /* allocate memory for token array */
-        tokens = malloc(sizeof(char *) * (n + 1));
-        if (!tokens)
-        {
-                perror("malloc");
-                exit(EXIT_FAILURE);
-        }
-
-        /* tokenize string */
-	n = 0;
-        token = strtok(str, " \t\r\n\f\v");
+	/* allocate memory for array */
+	tokens = malloc(sizeof(char *));
+	if (!tokens)
+		return (NULL);
+	/* tokenize string */
+        token = strtok(str, " \t\n");
         while (token)
         {
-                tokens[n++] = token;
-                token = strtok(NULL, " \t\r\n\f\v");
+		/* add token to array */
+                tokens[i] = token;
+		i++;
+                tokens = realloc(tokens, sizeof(char *) * (i + 1));
+		if (!tokens)
+			return (NULL);
+		token = strtok(NULL, " \t\n");
         }
-        tokens[n] = NULL;
+	/* add NULL terminator to end of array */
+        tokens[i] = NULL;
 
         return (tokens);
 }
