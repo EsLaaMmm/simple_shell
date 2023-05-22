@@ -59,7 +59,7 @@ int launch(char **args)
 
 	pid = fork();
 	if (pid == 0)
-	{    /*child process*/
+	{
 		char *path = getenv("PATH");
 		char *dir = strtok(path, ":");
 
@@ -84,7 +84,7 @@ int launch(char **args)
 	}
 	else if (pid < 0)
 	{
-		perror("fork");/*fork error*/
+		perror("fork");
 	}
 	else
 	{
