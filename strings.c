@@ -1,48 +1,35 @@
 #include "shell.h"
 
 /**
- * strlen - Computes the length of a string
- * @s: String
+ * _strcmp - Compares two strings
+ * @str1: First string
+ * @str2: Second string
+ * Return: An integer
+ */
+int _strcmp(const char *str1, const char *str2)
+{
+	while (*str1 && *str2 && *str1 == *str2)
+	{
+		str1++;
+		str2++;
+	}
+	return (*str1 - *str2);
+}
+
+/**
+ * _strlen - Calculates the length of a string
+ * @str: String to calculate
  * Return: Length of the string
  */
-size_t strlen(const char *s)
+size_t _strlen(const char *str)
 {
-	size_t i;
+	size_t len = 0;
 
-	for (i = 0; s[i]; i++)
-		;
-	return (i);
-}
+	while (str && *str)
+	{
+		len++;
+		str++;
+	}
 
-/**
- * strcpy - Copies a string
- * @dest: Destination string
- * @src: Source string
- * Return: Pointer to destination string
- */
-char *strcpy(char *dest, const char *src)
-{
-	int i;
-	for (i = 0; src[i]; i++)
-		dest[i] = src[i];
-	dest[i] = '\0';
-	return (dest);
-}
-/**
- * _strcat - Concatenates two strings
- * @dest: Destination string
- * @src: Source string
- * Return: Pointer to destination string
- */
-char *strcat(char *dest, const char *src)
-{
-	int dest_len = strlen(dest);
-	int i;
-
-	for (i = 0; src[i] != '\0'; i++)
-		dest[dest_len + i] = src[i];
-
-	dest[dest_len + i] = '\0';
-
-	return dest;
+	return (len);
 }
