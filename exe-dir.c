@@ -36,9 +36,9 @@ int execute_command(char **args)
 	{
 		return (handle_alias(args));
 	}
-	else if (_strcmp(args[0], "run_script") == 0)
+	else if (_strcmp(args[0], "script") == 0)
 	{
-		return (run_script(args[1]));
+		return (script(args[1]));
 	}
 	else
 	{
