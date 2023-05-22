@@ -46,9 +46,9 @@ int input(char *file_name)
 }
 
 /**
- *parse_line - Parses a line of input into an array of tokens
- *@line: The line of input to be parsed
- *Return: An array of tokens, or NULL if there was an error
+ * parse_input - Parses a line of input into an array of tokens
+ * @line: The line of input to be parsed
+ * Return: An array of tokens, or NULL if there was an error
  */
 char **parse_input(char *line)
 {
