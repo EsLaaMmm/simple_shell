@@ -41,3 +41,21 @@ int unset_environment(char **args)
 	}
 	return (0);
 }
+
+/**
+ * env - Prints the current environment
+ * Return: Always returns 0
+ */
+int env(void)
+{
+	char **env;
+
+	while (*env != NULL)
+	{
+		write(STDOUT_FILENO, *env, _strlen(*env));
+		write(STDOUT_FILENO, "\n", 1);
+		env++;
+	}
+
+	return (0);
+}
